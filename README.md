@@ -26,10 +26,11 @@ This project is at an early state of it's development. It works as intended (and
 1. You need to add two environment variables to your system: `AI_DM_BOT_KEY` is the discord API key. `OPENAI_API_KEY` is the OpenAI API key.
 2. Install the Bot: Add AI-DM bot to your Discord server.
 3. Set Up Your Game: Choose your TTRPG system and establish basic game settings. Currently there is a file in the `prompts` directory titled `aidm-system-prompt.txt`. You can modify this file to fit the rules you want. The default rule system is the fifth edition of D&D.
-4. Invite Your Friends: Bring your party together in your Discord server.
-5. Start Playing: Begin your adventure with the AI-DM guiding your journey. Just describe your characters in the discord channel and the type of adventure you want to have.
+4. Initialize AI-DM through the CLI with `aidm run`. The CLI assumes you are working from the root directory of this repository.
+5. Invite Your Friends: Bring your party together in your Discord server.
+6. Start Playing: Begin your adventure with the AI-DM guiding your journey. Just describe your characters in the discord channel and the type of adventure you want to have.
 
 If you are having trouble getting things to work please don't hesitate to reach out. I'll do everything I can to get your party adventuring!
 
 ## Contribution
-This is a labor of love. I'm currently working on this project in my spare time because I think it is a lot of fun. If you would like to contribute to this project I would greatly appreciate it! Just put in a PR and we can work together to make AI-DM everything it can be.
+This is a labor of love. I'm currently working on this project in my spare time because I think it is a lot of fun. If you would like to contribute to this project I would greatly appreciate it! Just submit a PR, and we will work together to make AI-DM everything it can be.
