@@ -1,6 +1,7 @@
 import logging
 import os
 from pathlib import Path
+from typing import Optional
 
 import discord
 
@@ -20,12 +21,14 @@ logging.basicConfig(
 
 
 def initialize_ai_dungeon_master(
-    system_prompt_path: Path = DEFAULT_PROMPT_PATH,
+    system_prompt_path: Path = DEFAULT_PROMPT_PATH, history_path: Optional[Path] = None
 ) -> AIDungeonMaster:
-    aidm = AIDungeonMaster(system_prompt_path=system_prompt_path)
-    # aidm = AIDungeonMaster.construct_from_history(
-    #     Path("lmop-system-prompt.txt"), Path("conversation_history.json")
-    # )
+    if history_path is not None:
+        aidm = AIDungeonMaster.construct_from_history(
+            system_prompt_path=system_prompt_path, history_path=history_path
+        )
+    else:
+        aidm = AIDungeonMaster(system_prompt_path=system_prompt_path)
     return aidm
 
 
@@ -34,7 +37,7 @@ async def handle_message(message: discord.Message) -> None:
         return
 
     if message.content == "#save":
-        # aidm.save_conversation_history()
+        aidm.save_conversation_history()
         await message.channel.send("Conversation history saved")
         return
 
@@ -48,8 +51,6 @@ async def handle_message(message: discord.Message) -> None:
 
 @client.event
 async def on_ready():
-    global aidm
-    aidm = initialize_ai_dungeon_master()
     logging.info(f"{client.user} is now running")
 
 
@@ -59,5 +60,9 @@ async def on_message(message: discord.Message) -> None:
     await handle_message(message)
 
 
-def run_dm_bot():
+def run_dm_bot(system_prompt_path: Path, history_path: Optional[Path] = None) -> None:
+    global aidm
+    aidm = initialize_ai_dungeon_master(
+        system_prompt_path=system_prompt_path, history_path=history_path
+    )
     client.run(DISCORD_TOKEN)

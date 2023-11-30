@@ -12,7 +12,7 @@ DESCRIPTION = "AI Dungeon Master"
 URL = "https://github.com/samvoisin/ai-dungeon-master"
 EMAIL = "samvoisin@protonmail.com"
 AUTHOR = "Sam Voisin"
-REQUIRES_PYTHON = ">=3.8"
+REQUIRES_PYTHON = ">=3.9"
 VERSION = "0.0.0"
 
 # required packages

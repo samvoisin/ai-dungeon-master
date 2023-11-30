@@ -1,7 +1,8 @@
+import json
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
-from langchain import LLMChain
+from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationTokenBufferMemory
 from langchain.prompts import (
@@ -56,20 +57,29 @@ class AIDungeonMaster:
     def query_model(self, message: str) -> str:
         return self.chain.predict(message=message)
 
-    # def save_conversation_history(self) -> None:
-    #     save_path = Path("conversation_history.txt")
-    #     with open(save_path, "w") as fh:
-    #         fh.write(self.chat_prompt.format_messages())
+    def save_conversation_history(self, save_file: Union[Path, str]= "conversation_history.json") -> None:
 
-    # @classmethod
-    # def construct_from_history(
-    #     cls, system_prompt_path: Path, history_path: Path
-    # ) -> "AIDungeonMaster":
-    #     with open(history_path, "r") as fh:
-    #         conversation_history = json.load(fh)
+        if self.chain.memory is None:
+            raise ValueError("Cannot save conversation history without a memory buffer")
 
-    #     aidm = cls(system_prompt_path=system_prompt_path)
-    #     aidm.conversation_history = conversation_history
-    #     aidm.conversation_history[0]["content"] = aidm.system_prompt
+        chat_history = self.chain.memory.dict()
 
-    #     return aidm
+        # currently only safe to save the conversation history in the save_files directory
+        save_dir = Path("./save_files")
+        save_path = save_dir / save_file
+        with open(save_path, "w") as fh:
+            json.dump(chat_history, fh)
+
+    @classmethod
+    def construct_from_history(
+        cls, system_prompt_path: Path, history_path: Path
+    ) -> "AIDungeonMaster":
+        with open(history_path, "r") as fh:
+            conversation_history = json.load(fh)
+
+        aidm = cls(system_prompt_path=system_prompt_path)
+
+        memory = ConversationTokenBufferMemory.construct(conversation_history)
+        aidm.chain.memory = memory
+
+        return aidm
