@@ -24,9 +24,7 @@ def initialize_ai_dungeon_master(
     system_prompt_path: Path = DEFAULT_PROMPT_PATH, history_path: Optional[Path] = None
 ) -> AIDungeonMaster:
     if history_path is not None:
-        aidm = AIDungeonMaster.construct_from_history(
-            system_prompt_path=system_prompt_path, history_path=history_path
-        )
+        aidm = AIDungeonMaster.construct_from_history(history_path=history_path)
     else:
         aidm = AIDungeonMaster(system_prompt=system_prompt_path)
     return aidm
@@ -37,7 +35,7 @@ async def handle_message(message: discord.Message) -> None:
         return
 
     if message.content == "#save":
-        aidm.save_conversation_history()
+        aidm.save_message_history()
         await message.channel.send("Conversation history saved")
         return
 

@@ -75,8 +75,10 @@ class AIDungeonMaster:
     def construct_from_history(
         cls,
         history_path: Union[str, Path] = "save_files/message_history.json",
-        **kwargs,
     ) -> "AIDungeonMaster":
+        """
+        Construct an AIDungeonMaster instance from a message history file.
+        """
         if isinstance(history_path, str):
             history_path = Path(history_path)
 
@@ -85,6 +87,15 @@ class AIDungeonMaster:
 
         system_prompt = message_history[0]["content"]
 
-        instance = cls(system_prompt=system_prompt, **kwargs)
+        # model parameters
+        model_kwargs = dict(
+            max_tokens=500,
+            n=1,
+            stop=None,
+            temperature=0.7,
+            frequency_penalty=0.2,
+        )
+
+        instance = cls(system_prompt=system_prompt, model_kwargs=model_kwargs)
         instance.message_history = message_history
         return instance
