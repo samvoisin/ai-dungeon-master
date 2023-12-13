@@ -28,7 +28,7 @@ def initialize_ai_dungeon_master(
             system_prompt_path=system_prompt_path, history_path=history_path
         )
     else:
-        aidm = AIDungeonMaster(system_prompt_path=system_prompt_path)
+        aidm = AIDungeonMaster(system_prompt=system_prompt_path)
     return aidm
 
 

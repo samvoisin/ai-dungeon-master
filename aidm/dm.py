@@ -1,34 +1,31 @@
 import json
+import os
 from pathlib import Path
 from typing import Dict, Optional, Union
 
-from langchain.chains import LLMChain
-from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationTokenBufferMemory
-from langchain.prompts import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    SystemMessagePromptTemplate,
-)
+from openai import OpenAI
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
 
 class AIDungeonMaster:
-    def __init__(
-        self, system_prompt_path: Path, model_kwargs: Optional[Dict] = None
-    ) -> None:
-        # set up prompt
-        with open(system_prompt_path, "r") as fh:
-            system_prompt_text = fh.read()
+    """
+    Class to manage the AI Dungeon Master.
+    """
 
-        system_prompt_text += "\n\n{history}"
-        system_prompt = SystemMessagePromptTemplate.from_template(
-            template=system_prompt_text, input_variables=["history"]
-        )
-        user_prompt = HumanMessagePromptTemplate.from_template("```{message}```")
-        self.chat_prompt = ChatPromptTemplate.from_messages(
-            [system_prompt, user_prompt]
-        )
+    def __init__(
+        self, system_prompt: Union[str, Path], model_kwargs: Optional[Dict] = None
+    ) -> None:
+        self._client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+        self.model_name = "gpt-4"
+
+        # set up prompt
+        if isinstance(system_prompt, Path):
+            with open(system_prompt, "r") as fh:
+                system_prompt = fh.read()
+
+        self.message_history = [
+            {"role": "system", "content": system_prompt},
+        ]
 
         # model parameters
         self.model_kwargs = model_kwargs or dict(
@@ -39,47 +36,55 @@ class AIDungeonMaster:
             frequency_penalty=0.2,
         )
 
-        # set up model and chain
-        llm = ChatOpenAI(
-            model="gpt-4", **self.model_kwargs
-        )
-
-
-        memory = ConversationTokenBufferMemory(llm=llm, max_token_limit=8192 - 500)
-        self.chain = LLMChain(
-            llm=llm,
-            prompt=self.chat_prompt,
-            verbose=True,
-            memory=memory,
-        )
+    def format_user_message(self, message: str) -> str:
+        return f"```{message}```"
 
     @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
     def query_model(self, message: str) -> str:
-        return self.chain.predict(message=message)
+        """
+        Query the model with a user message and return the AI's response.
+        """
+        formatted_message = self.format_user_message(message)
+        self.message_history.append({"role": "user", "content": formatted_message})
+        response = self._client.chat.completions.create(
+            model=self.model_name,
+            messages=self.message_history,
+            **self.model_kwargs,
+        )
+        ai_message = response.choices[0].message.content
 
-    def save_conversation_history(self, save_file: Union[Path, str]= "conversation_history.json") -> None:
+        if ai_message is None:
+            raise ValueError("AI response is None")
 
-        if self.chain.memory is None:
-            raise ValueError("Cannot save conversation history without a memory buffer")
+        self.message_history.append({"role": "assistant", "content": ai_message})
+        return ai_message
 
-        chat_history = self.chain.memory.dict()
-
-        # currently only safe to save the conversation history in the save_files directory
-        save_dir = Path("./save_files")
+    def save_message_history(
+        self, save_file: Union[Path, str] = "message_history.json"
+    ) -> None:
+        """
+        Save the message history as JSON.
+        """
+        # TODO: currently only safe to save the message history in the save_files directory
+        save_dir = Path("save_files/")
         save_path = save_dir / save_file
         with open(save_path, "w") as fh:
-            json.dump(chat_history, fh)
+            json.dump(self.message_history, fh)
 
     @classmethod
     def construct_from_history(
-        cls, system_prompt_path: Path, history_path: Path
+        cls,
+        history_path: Union[str, Path] = "save_files/message_history.json",
+        **kwargs,
     ) -> "AIDungeonMaster":
+        if isinstance(history_path, str):
+            history_path = Path(history_path)
+
         with open(history_path, "r") as fh:
-            conversation_history = json.load(fh)
+            message_history = json.load(fh)
 
-        aidm = cls(system_prompt_path=system_prompt_path)
+        system_prompt = message_history[0]["content"]
 
-        memory = ConversationTokenBufferMemory.construct(conversation_history)
-        aidm.chain.memory = memory
-
-        return aidm
+        instance = cls(system_prompt=system_prompt, **kwargs)
+        instance.message_history = message_history
+        return instance
