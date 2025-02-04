@@ -15,7 +15,7 @@ With the advent of widely available generative AI systems and specifically large
 * Discord Integration: Integrates with Discord, allowing players to interact with the AI-DM through a familiar interface.
 
 ## How It Works
-The AI-DM is built on top of OpenAI's chat interface to [GPT-4](https://openai.com/gpt-4) and the suite of LLM tools provided by [LangChain](https://www.langchain.com/). Players can then interact with the LLM chatbot through text in a channel on their discord server. When players input their actions, AI-DM interprets these actions and responds appropriately within the scope of the rules and the current adventure. Whether it's describing a new scene, managing combat, or engaging in dialogue with NPCs, the AI-DM handles it all.
+The AI-DM is built on top of OpenAI's chat interface to [GPT-4](https://openai.com/gpt-4) and the suite of LLM tools provided by [LlamaIndex](https://docs.llamaindex.ai/en/stable/). Players can then interact with the LLM chatbot through text in a channel on their discord server. When players input their actions, AI-DM interprets these actions and responds appropriately within the scope of the rules and the current adventure. Whether it's describing a new scene, managing combat, or engaging in dialogue with NPCs, the AI-DM handles it all.
 
 ## Limitations
 This project is at an early state of it's development. It works as intended (and is a ton of fun!), but it currently has some limitations:
