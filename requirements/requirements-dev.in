@@ -1,13 +1,10 @@
 -c requirements.txt
 
-# install, making requirements, ...
-pip-tools~=7.3
-
 # code format
-ruff~=0.1
-pre-commit~=2.15
+ruff
+pre-commit
 
 # testing
-pytest~=7.0
-pytest-cov~=3.0
-pdbpp~=0.10
+pytest
+pytest-cov
+pdbpp

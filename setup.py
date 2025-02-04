@@ -12,17 +12,16 @@ DESCRIPTION = "AI Dungeon Master"
 URL = "https://github.com/samvoisin/ai-dungeon-master"
 EMAIL = "samvoisin@protonmail.com"
 AUTHOR = "Sam Voisin"
-REQUIRES_PYTHON = ">=3.9"
+REQUIRES_PYTHON = ">=3.12"
 VERSION = "0.0.0"
 
 # required packages
 REQUIRED: List[str] = [
-    "click~=8.1",
-    "langchain~=0.0",
-    "openai~=1.3",
-    "tenacity~=8.2",
-    "tiktoken~=0.5",
-    "discord~=2.3",
+    "click",
+    "llama-index",
+    "tenacity",
+    "tiktoken",
+    "discord",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
