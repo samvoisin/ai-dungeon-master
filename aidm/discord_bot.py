@@ -8,6 +8,7 @@ import discord
 from aidm import AIDungeonMaster
 
 DEFAULT_PROMPT_PATH = Path("prompts/aidm-system-prompt.txt")
+DEFAULT_SAVE_PATH = Path("history/aidm-chat-history.json")
 DISCORD_TOKEN = os.environ["AI_DM_BOT_KEY"]
 
 intents = discord.Intents.default()
@@ -15,9 +16,7 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 
 def initialize_ai_dungeon_master(
@@ -35,7 +34,7 @@ async def handle_message(message: discord.Message) -> None:
         return
 
     if message.content == "#save":
-        aidm.save_message_history()
+        aidm.save_message_history(DEFAULT_SAVE_PATH)
         await message.channel.send("Conversation history saved")
         return
 
@@ -60,7 +59,5 @@ async def on_message(message: discord.Message) -> None:
 
 def run_dm_bot(system_prompt_path: Path, history_path: Optional[Path] = None) -> None:
     global aidm
-    aidm = initialize_ai_dungeon_master(
-        system_prompt_path=system_prompt_path, history_path=history_path
-    )
+    aidm = initialize_ai_dungeon_master(system_prompt_path=system_prompt_path, history_path=history_path)
     client.run(DISCORD_TOKEN)
