@@ -60,7 +60,7 @@ This will:
 2. Install all required packages from `requirements/requirements.txt` and `requirements/requirements-dev.txt`
 3. Install the `aidm` CLI tool in editable mode
 
-> **Note:** All subsequent commands assume you are running from the root directory of this repository with the virtual environment activated (e.g., `source .venv/bin/activate` on macOS/Linux or `.venv\Scripts\activate` on Windows).
+> **Note:** All subsequent commands assume you are running from the root directory of this repository with the virtual environment activated (e.g., `source .venv/bin/activate` on macOS/Linux, `.venv\Scripts\activate` in Windows Command Prompt, or `.\.venv\Scripts\Activate.ps1` in Windows PowerShell).
 
 ---
 
